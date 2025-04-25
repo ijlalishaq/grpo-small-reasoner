@@ -1,0 +1,13 @@
+# Pinned versions the code was written and checked against. Everything runs on CPU.
+# Tip: install the CPU-only torch wheel first, it's a much smaller download:
+#   pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+torch==2.6.0
+transformers==4.51.3
+trl==0.16.1
+peft==0.15.2
+datasets==3.5.0
+accelerate==1.6.0
+tokenizers==0.21.1
+pyyaml==6.0.2
+rich==14.0.0
+pytest==8.3.5

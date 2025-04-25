@@ -1,0 +1,12 @@
+[project]
+name = "grpo-small-reasoner"
+version = "0.1.0"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+markers = ["slow: end-to-end CPU pipeline test (needs torch + trl)"]
+addopts = "-m 'not slow'"
+
+[tool.ruff]
+line-length = 130
