@@ -1,0 +1,43 @@
+# Main run, sized for a normal laptop CPU (no GPU). About 1 hour on 4 cores.
+# Every number here was picked to keep each step short, not to get the best score.
+dataset: toy            # generated word problems, see toy_math.py (gsm8k also works, but is much harder)
+
+model:
+  name: Qwen/Qwen2.5-0.5B-Instruct   # ~2 GB in float32, the smallest model that does arithmetic at all
+  dtype: float32                     # CPUs are slow at bfloat16 math, so plain float32
+
+lora:
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.0
+  target_modules: [q_proj, k_proj, v_proj, o_proj]   # attention only: fewer trainable weights, faster steps
+
+# Reward name -> weight. Total reward = sum of weight * reward.
+rewards:
+  correctness: 1.0
+  format: 1.0          # format_reward already returns 0.2, so this keeps it at 0.2
+
+grpo:
+  output_dir: outputs/main
+  seed: 0
+  max_steps: 100
+  learning_rate: 5.0e-5   # higher than you'd use on a big run, because we only get 100 steps
+  lr_scheduler_type: constant_with_warmup
+  warmup_steps: 5
+  # Completions per step = per_device_train_batch_size * gradient_accumulation_steps = 8.
+  # Divided by num_generations, that is 8 / 4 = 2 questions per step.
+  # Keep per_device_train_batch_size small: Qwen's 152k-word vocabulary makes the
+  # logits huge, and a batch of 16 ran a 16 GB laptop out of memory.
+  per_device_train_batch_size: 4
+  gradient_accumulation_steps: 2
+  num_generations: 4
+  max_completion_length: 128
+  temperature: 1.0
+  beta: 0.0
+  use_cpu: true
+  bf16: false
+  gradient_checkpointing: false
+  logging_steps: 1
+  save_steps: 25
+  log_completions: true   # prints a sample table each logging step (needs rich)
+  report_to: none

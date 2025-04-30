@@ -1,0 +1,7 @@
+# 3-step crash test (a couple of minutes). Run it first to check everything is installed.
+extends: main.yaml
+grpo:
+  output_dir: outputs/smoke
+  max_steps: 3
+  max_completion_length: 32
+  save_steps: 3
