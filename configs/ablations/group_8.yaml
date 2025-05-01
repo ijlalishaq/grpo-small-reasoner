@@ -1,0 +1,8 @@
+# Experiment: group size G = 8 (main uses 4). TRL needs the per-device batch to be a multiple of G,
+# so this is 8 x 2 accumulation: still 2 questions per step, each step about twice as long.
+extends: ../main.yaml
+grpo:
+  output_dir: outputs/group_8
+  num_generations: 8
+  per_device_train_batch_size: 8
+  gradient_accumulation_steps: 2

@@ -1,0 +1,5 @@
+# Experiment: KL penalty beta = 0.04 (main uses 0). With LoRA the reference is just the adapter switched off, so no extra memory.
+extends: ../main.yaml
+grpo:
+  output_dir: outputs/kl_0.04
+  beta: 0.04

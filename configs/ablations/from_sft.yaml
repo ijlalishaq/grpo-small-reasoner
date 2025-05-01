@@ -1,0 +1,6 @@
+# Experiment: GRPO starting from the SFT warm-start model (run sft.py + merge_lora.py first, ~15 min).
+extends: ../main.yaml
+model:
+  name: outputs/sft-merged
+grpo:
+  output_dir: outputs/from_sft

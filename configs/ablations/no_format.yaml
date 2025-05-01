@@ -1,0 +1,7 @@
+# Experiment: correctness reward only. Does the model still learn the tag format?
+extends: ../main.yaml
+rewards:
+  correctness: 1.0
+  format: 0.0
+grpo:
+  output_dir: outputs/no_format

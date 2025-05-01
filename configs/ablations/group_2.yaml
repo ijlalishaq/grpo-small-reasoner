@@ -1,0 +1,6 @@
+# Experiment: group size G = 2 (main uses 4). Still 2 questions per step, so each step is faster.
+extends: ../main.yaml
+grpo:
+  output_dir: outputs/group_2
+  num_generations: 2
+  gradient_accumulation_steps: 1
