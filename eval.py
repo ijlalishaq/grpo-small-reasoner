@@ -3,8 +3,8 @@
     python eval.py --model Qwen/Qwen2.5-0.5B-Instruct --split val --tag base
     python eval.py --model outputs/main-seed0-merged --split test --tag grpo-seed0
 
-On a laptop CPU, the 100-question val split takes roughly 5-15 minutes
-depending on --k. Use --limit 20 while you are just poking around.
+On a laptop CPU, the 100-question val split takes roughly 10-20 minutes with
+the default --k 4. Use --k 1 --limit 20 while you are just poking around.
 
 Metrics:
   pass@1   greedy decoding, the headline number
@@ -22,6 +22,7 @@ from __future__ import annotations
 import argparse
 import json
 import time
+from functools import lru_cache
 from pathlib import Path
 
 from data import load_split
@@ -31,8 +32,9 @@ from rewards import has_valid_format, parse_gold, predicted_number
 RESULTS = Path(__file__).parent / "results"
 
 
-def generate_hf(model_name, prompts, n, temperature, max_new_tokens, batch_size):
-    """Return (texts, token_counts), each a list of n-item lists, one per prompt."""
+@lru_cache(maxsize=1)
+def load_model(model_name):
+    """Cached so the greedy and the sampled pass share one copy of the weights."""
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -42,7 +44,14 @@ def generate_hf(model_name, prompts, n, temperature, max_new_tokens, batch_size)
     device = "cuda" if torch.cuda.is_available() else "cpu"
     dtype = torch.bfloat16 if device == "cuda" else torch.float32
     model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=dtype).to(device).eval()
+    return model, tok, device
 
+
+def generate_hf(model_name, prompts, n, temperature, max_new_tokens, batch_size):
+    """Return (texts, token_counts), each a list of n-item lists, one per prompt."""
+    import torch
+
+    model, tok, device = load_model(model_name)
     texts, lengths = [], []
     for i in range(0, len(prompts), batch_size):
         chats = [tok.apply_chat_template(p, tokenize=False, add_generation_prompt=True) for p in prompts[i : i + batch_size]]
@@ -68,12 +77,11 @@ def evaluate(args) -> dict:
     if args.limit:
         ds = ds.select(range(min(args.limit, len(ds))))
     prompts, golds = ds["prompt"], [parse_gold(a) for a in ds["answer"]]
-    gen = generate_hf
 
-    greedy, greedy_len = gen(args.model, prompts, 1, 0.0, args.max_new_tokens, args.batch_size)
+    greedy, greedy_len = generate_hf(args.model, prompts, 1, 0.0, args.max_new_tokens, args.batch_size)
     sampled = [[] for _ in prompts]
     if args.k > 1:
-        sampled, _ = gen(args.model, prompts, args.k, args.temperature, args.max_new_tokens, args.batch_size)
+        sampled, _ = generate_hf(args.model, prompts, args.k, args.temperature, args.max_new_tokens, args.batch_size)
 
     rows, totals = [], dict(pass1=0.0, majk=0.0, passk=0.0, fmt=0.0, length=0.0)
     for prompt, gold, g, glen, samples in zip(prompts, golds, greedy, greedy_len, sampled):
