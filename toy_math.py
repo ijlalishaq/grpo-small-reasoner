@@ -85,8 +85,9 @@ def make_problems(split: str, n: int | None = None) -> list[dict]:
     # Mix of difficulties: roughly a third each.
     makers = [_one_step, _two_step, _three_step]
     rows, seen = [], set()
-    # Never let the same question text land in two splits.
-    other = set() if split == "train" else {p["question"] for p in make_problems("train")}
+    # Never let the same question text land in two splits: val skips train, test skips both.
+    earlier = {"train": [], "val": ["train"], "test": ["train", "val"]}[split]
+    other = {p["question"] for s in earlier for p in make_problems(s)}
     while len(rows) < n:
         q, steps, ans = makers[len(rows) % 3](r)
         if q in seen or q in other:

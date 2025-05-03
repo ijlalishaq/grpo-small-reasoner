@@ -61,8 +61,8 @@ def test_toy_problems_are_stable_disjoint_and_correct():
     train, val, test = (make_problems(s) for s in ("train", "val", "test"))
     assert [len(train), len(val), len(test)] == [SPLIT_SIZES[s] for s in ("train", "val", "test")]
     assert make_problems("val") == val  # same seed, same problems, on every machine
-    train_q = {r["question"] for r in train}
-    assert not train_q & {r["question"] for r in val} and not train_q & {r["question"] for r in test}
+    train_q, val_q, test_q = ({r["question"] for r in rows} for rows in (train, val, test))
+    assert not train_q & val_q and not train_q & test_q and not val_q & test_q
     for row in train + val + test:
         # Every worked line "a op b = c" is true, and the last result is the gold answer.
         lines = row["answer"].split("####")[0].strip().splitlines()
