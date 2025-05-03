@@ -1,0 +1,4 @@
+{"tag": "base", "model": "Qwen/Qwen2.5-0.5B-Instruct", "dataset": "toy", "split": "val", "n": 100, "pass@1": 0.54, "format_rate": 0.32, "mean_length": 61.4, "time": "2025-05-03 19:21:47", "max_new_tokens": 160, "maj@4": 0.64, "pass@4": 0.69, "temperature": 1.0}
+{"tag": "base", "model": "Qwen/Qwen2.5-0.5B-Instruct", "dataset": "toy", "split": "test", "n": 200, "pass@1": 0.505, "format_rate": 0.305, "mean_length": 62.555, "time": "2025-05-03 19:34:11", "max_new_tokens": 160}
+{"tag": "grpo-seed0", "model": "outputs/main-seed0-merged", "dataset": "toy", "split": "val", "n": 100, "pass@1": 0.91, "format_rate": 1.0, "mean_length": 45.88, "time": "2025-05-03 20:48:10", "max_new_tokens": 160, "maj@4": 0.94, "pass@4": 0.99, "temperature": 1.0}
+{"tag": "grpo-seed0", "model": "outputs/main-seed0-merged", "dataset": "toy", "split": "test", "n": 200, "pass@1": 0.88, "format_rate": 1.0, "mean_length": 46.54, "time": "2025-05-03 20:56:03", "max_new_tokens": 160}
