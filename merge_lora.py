@@ -1,7 +1,7 @@
 """Fold a LoRA adapter into its base model and save a standalone model.
 
-    python merge_lora.py outputs/main outputs/main-merged
-    python merge_lora.py outputs/main/checkpoint-300 outputs/main-300-merged
+    python merge_lora.py outputs/main-seed0 outputs/main-seed0-merged
+    python merge_lora.py outputs/main-seed0/checkpoint-50 outputs/main-seed0-step50-merged
 
 LoRA trains two small matrices A and B per layer and leaves the base weights
 frozen; the effective weight is W + (alpha / r) * B @ A. Merging computes that
